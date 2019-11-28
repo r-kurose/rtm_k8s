@@ -168,7 +168,13 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 
 - Docker/Kubenetes テンプレート対応 OpenRTP
 
-  https://github.com/r-kurose/OpenRTP-aist/tree/docker_template
+  + ソースコード
+
+    https://github.com/r-kurose/OpenRTP-aist/tree/docker_template
+  
+  + 実行ファイル
+
+    https://github.com/r-kurose/OpenRTP-aist/releases/tag/si2019   
 
 - ネームサーバー
   + Docker イメージ (linux/amd64, arm)
