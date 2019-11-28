@@ -294,7 +294,6 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 　下記の初期化手順をおまじないとして実行してください。
 ```
 kubeadm init --pod-network-cidr=10.244.0.0/16
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
 ### ワーカーノード
 ```
@@ -306,12 +305,18 @@ kubeadm join <マスターノードの kubeadm init 実行で表示されるパ�
 以下の実行で、マスターノードに対して指示を出すことができるようになります。
 ```
 mkdir -p $HOME/.kube
-sudo cp -i <マスターノードの admin.conf> $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+cp -i <マスターノードの admin.conf> $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 なお、マスターノードの conf ファイルは `/etc/kubernetes/admin.conf` にあります。
+コピーできない場合、権限を`chmod +r admin.conf`で付与してください。
 
 確認方法: 管理 PC で `kubectl get nodes` を実行するとノードが見える。
+
+　下記の初期化手順をおまじないとして実行してください。
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```
 
 ### ワーカーにラベルを設定
 管理 PC からワーカーにラベルを設定します。
@@ -319,7 +324,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 kubectl label node worker-2 consolein=true
 kubectl label node worker-1 consoleout=true
-kubectl label node worker-1 rtshell=rue
+kubectl label node worker-1 rtshell=true
 kubectl label node worker-1 nameserver=true
 ```
 確認方法: `kubectl get nodes --show-labels` で設定した値が見える。
@@ -343,35 +348,94 @@ kubectl label node worker-1 nameserver=true
 1. ワーカーに RTC を起動します。
    ConsoleIn/ConsoleOut のイメージとマニフェストファイルを用意しました。以下を実行して下さい。
    ```
-   kubectl apply -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/master/ConsoleOut/ConsoleIn.yaml
+   kubectl apply -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/master/ConsoleIn/ConsoleIn.yaml
    kubectl apply -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/master/ConsoleOut/ConsoleOut.yaml
    ```
 
-   確認方法: `kubectl get pods` で確認の上、`kubectl exec <rtshell node ip> rtls -R localhost` で RTC が見えれば成功です。
- 
-## RTC のアップデート
-1. ConsoleIn/ConsoleOut のソースコードを取得する。
+   確認方法: `kubectl get pods` で確認の上、`kubectl exec <rtshell の Pod 名> -- rtls -R 10.96.0.100` で RTC が見えれば成功です。
+   
+   以下はコマンド実施例なので、Pod名は読み替えてください。
+   
+   ```
+   $ kubectl get pods
+   NAME                              READY   STATUS    RESTARTS   AGE
+   pod-consolein-6566bb945d-n5tz5    1/1     Running   0          11m
+   pod-consoleout-75948f6848-mhlzv   1/1     Running   0          57s
+   pod-nameserver-596c89ffd-jcbgf    1/1     Running   0          23m
+   pod-rtshell-65cddff7b9-966fp      1/1     Running   0          25m
+   ```
+   ```
+   $ kubectl exec pod-rtshell-65cddff7b9-966fp -- rtls -R 10.96.0.100
+   .:
+   pod-consolein-6566bb945d-n5tz5.host_cxt/
+   pod-consoleout-75948f6848-mhlzv.host_cxt/
+
+   ./pod-consolein-6566bb945d-n5tz5.host_cxt:
+   ConsoleIn0.rtc
+
+   ./pod-consoleout-75948f6848-mhlzv.host_cxt:
+   ConsoleOut0.rtc
+   ```
+   
+1. ConsoleIn RTC へ値を入力する
+
+   kubectl attach を使い、ConsoleIn と ConsoleOut の Pod にアタッチして RTC の動作を確認できます。
+   以下のコマンドはそれぞれ別のシェルで実施してください。 
+   ConsoleIn 側のシェルに attach したシェル側で値を入力すると、ConsoleOut 側のシェルに値が出力されます。
+   
+   ```
+   kubectl attatch <ConsoleOut Pod名>
+   ```
+   ```
+   kubectl attach -ti <ConsoleIn Pod名>
+   ```
+
+## RTC の更新
+
+以下のような変更を加えた ConsoleIn に切り替えます。
+
+   https://github.com/r-kurose/kube-simpleio-sample/commit/c65b39f2bd3e83e103dce6a8ff5a01295bd02510
+   
+1. ConsoleIn を終了します。
+
+   ```
+   kubectl delete -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/master/ConsoleIn/ConsoleIn.yaml
+   ```
+   `kubectl get pods`で ConsoleIn が終了したことを確認してください。      
+   
+   
+   
+1. アップデート版 ConsoleIn v1.1 を起動します。
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/v1.1/ConsoleIn/ConsoleIn.yaml
+   ```
+   `kubectl attach -ti <ConsoleIn Pod名>`を使って値を入力すると、 +1 した値が出力されます。
+
+
+## RTC のイメージとマニフェストファイルの作成
+1. ConsoleIn のソースコードを取得する。
    以下から、ソースコードをダウンロードして下さい。
    https://github.com/r-kurose/kube-simpleio-sample
 
    なお、自分でコンポーネントを作りたい場合は、作成ツールの一覧にある RTC Builder でテンプレートを作成して下さい。
 
 1. RTC のソースコードを変更してビルドします。
-   お試しに入力した値を +1 する変更を加えてみます。ConsoleIn.cpp#L105 に `m_out.data += 1` を追加して下さい。
+   ここで、RTC のソースコードに変更を加えてください。例えば、入力を促すメッセージを変更するなど。
 
    次に RTC をビルドします。
    テンプレートの Dockerfile は、Ubuntu 用と Alpine 用があります。
    どちらを採用するかは、イメージサイズに関してまとめた付録の章も参考にして下さい。
    amd64 向けと arm (Raspberry Pi) 向けを作りたい場合の方法も付録に記載しています。
    ```
-   docker build -f Dockerfile.alpine -t ConsoleIn:1.0 .
+   docker build -f Dockerfile.alpine -t consolein:2.0 .
    ```
    確認方法: `docker images` でイメージの存在が見えたら成功です。
 
 1. イメージを Docker リポジトリにアップロードします。
    ```
-   docker tag ConsoleIn:1.0 <リポジトリ名>/ConsoleIn:1.0
-   docker push <リポジトリ名>/ConsoleIn:1.0
+   docker tag consolein:2.0 <あなたのリポジトリ名>/consolein:2.0
+   docker push <あなたのリポジトリ名>/consolein:2.0
    ```
    　push先に DockerHub を使う場合は事前にアカウントを取得し、ログインして下さい。
    ローカル環境にリポジトリを構築する場合は、付録を参照して下さい。その場合、ログインは不要です。
@@ -380,26 +444,18 @@ kubectl label node worker-1 nameserver=true
    ```
 1. Kubernetes のマニフェストファイル (.yaml) を開きイメージ名を変更します。
 
+   ConsoleIn.yamlの L.17 行目を `image: <リポジトリ名>/consolein:2.0` に変更します。
    開発時は、ここで作成したマニフェストファイルを git などのソースコードリポジトリで管理することをお勧めします。
-
-1. RTC を停止します。
-   ```
-   kubectl delete -f ConsoleIn.yaml
-   ```
-   　停止までに時間がかかることもありますが、 rtshell などで RTC が停止したことが確認できます。
-   `kubectl get pods` で pod が終了したこともわかると思います。
 
 1. バージョンアップした RTC を起動します。
    ```
+   kubectl delete -f ConsoleIn.yaml
+   ```
+   `kubectl get pods`で ConsoleIn が終了したことを確認してください。 
+   ```
    kubectl apply -f ConsoleIn.yaml
    ```
-   RTC の動作を確認すると、値が一つ増えていると思います。
-
-1. RTC をバージョンダウンします。
-
-   RTC を元のものに戻してみます。 delete せずにそのまま `kubectl apply` してみて下さい。
-   しばらくの間、二つのバージョンが同時に動作するかもしれません。
-   先ほどのように delete -f で起動中の RTC を止めることが一つの解決法です。
+   RTC の動作を確認してください。
 
 # 付録
 ## Docker ビルドの高速化
