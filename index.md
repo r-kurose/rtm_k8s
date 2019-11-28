@@ -23,7 +23,9 @@ RTC やロボットシステムの開発だけでなく、運用面での効率�
     * [ワーカーノード](#%E3%83%AF%E3%83%BC%E3%82%AB%E3%83%BC%E3%83%8E%E3%83%BC%E3%83%89)
     * [管理 PC](#%E7%AE%A1%E7%90%86-pc)
     * [ワーカーにラベルを設定](#%E3%83%AF%E3%83%BC%E3%82%AB%E3%83%BC%E3%81%AB%E3%83%A9%E3%83%99%E3%83%AB%E3%82%92%E8%A8%AD%E5%AE%9A)
-  * [RTC の作成、削除、バージョン変更手順](#rtc-%E3%81%AE%E4%BD%9C%E6%88%90%E5%89%8A%E9%99%A4%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E5%A4%89%E6%9B%B4%E6%89%8B%E9%A0%86)
+  * [RTC の実行](#rtc-%E3%81%AE%E5%AE%9F%E8%A1%8C)
+  * [RTC の更新](#rtc-%E3%81%AE%E6%9B%B4%E6%96%B0)
+  * [RTC のイメージとマニフェストファイルの作成](#rtc-%E3%81%AE%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%A8%E3%83%9E%E3%83%8B%E3%83%95%E3%82%A7%E3%82%B9%E3%83%88%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E4%BD%9C%E6%88%90)
 * [付録](#%E4%BB%98%E9%8C%B2)
   * [Docker ビルドの高速化](#docker-%E3%83%93%E3%83%AB%E3%83%89%E3%81%AE%E9%AB%98%E9%80%9F%E5%8C%96)
   * [マルチアーキテクチャ対応の Docker ビルド](#%E3%83%9E%E3%83%AB%E3%83%81%E3%82%A2%E3%83%BC%E3%82%AD%E3%83%86%E3%82%AF%E3%83%81%E3%83%A3%E5%AF%BE%E5%BF%9C%E3%81%AE-docker-%E3%83%93%E3%83%AB%E3%83%89)
@@ -33,7 +35,6 @@ RTC やロボットシステムの開発だけでなく、運用面での効率�
   * [Docker イメージのサイズ](#docker-%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%AE%E3%82%B5%E3%82%A4%E3%82%BA)
   * [コンテナネットワーク](#%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF)
 * [改訂履歴](#%E6%94%B9%E8%A8%82%E5%B1%A5%E6%AD%B4)
-* [注記](#%E6%B3%A8%E8%A8%98)
 
 # フレームワークが実現すること
 　はじめに、このページで紹介するツール・仕組みを導入することで何が実現されるのかを列挙しながら説明します。
@@ -83,14 +84,14 @@ RTC やロボットシステムの開発だけでなく、運用面での効率�
   ツールを通して配置可能となります。  
   　また、開発用 PC はロボットシステムと同じネットワークに所属する必要は無いため、遠隔地でのロボット開発も可能です。
 
--  プロトタピングやデバッグの効率化
+- プロトタピングやデバッグの効率化
 
   　前述のリモート PC への配置と実行を利用することで、プログラム修正と実行の反復作業は効率的になります。
   プロトタイピングにおいては、アルゴリズム修正やパラメータ変更などが容易になります。
   デバッグ時にいおいても同様に、修正した RTC の動作を手早く確認できます。
   また、デバッグに使われる rtshell や OpenRTP などのツールはこの仕組みの中でも使用可能です。
 
--  RTC のインテグレーション作業の効率化
+- RTC のインテグレーション作業の効率化
 
   　ロボットシステムは複数の RTC をインテグレーションすることで構築されます。
   テキスト記述を行うことで、ロボットシステム内の各 PC に対して、どの RTC をバージョンやオプションを指定
@@ -188,9 +189,19 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 
     https://github.com/r-kurose/rtshell-image
 
+- サンプルコンポーネント
+  + Docker イメージ (linux/amd64, arm)
+  
+    ConsoleIn: https://hub.docker.com/repository/docker/kuroseaist/consolein  
+    ConsoleOut: https://hub.docker.com/repository/docker/kuroseaist/consolein
+  
+  + ソースコード
+  
+    https://github.com/r-kurose/kube-simpleio-sample
+
 - ビルド用 Docker イメージ (ビルドキャッシュ用）
 
-  ビルド済み omniORB, OpenRTM-aist のイメージです。
+  　ビルド済み omniORB, OpenRTM-aist のイメージです。
   RTC のビルドを行う際に、これらのイメージが使われます。
   OpenRTM-aist は開発版 (2.0 予定版) です。
 
@@ -299,10 +310,10 @@ kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
 kubeadm join <マスターノードの kubeadm init 実行で表示されるパラメーター>
 ```
-確認方法: マスターノードで `kubectl get nodes` を実行するとノードが見える。
+確認方法: マスターノードで `kubectl get nodes` を実行するとノードが見えます。
 
 ### 管理 PC
-以下の実行で、マスターノードに対して指示を出すことができるようになります。
+　以下の実行で、マスターノードに対して指示を出すことができるようになります。
 ```
 mkdir -p $HOME/.kube
 cp -i <マスターノードの admin.conf> $HOME/.kube/config
@@ -311,15 +322,15 @@ chown $(id -u):$(id -g) $HOME/.kube/config
 なお、マスターノードの conf ファイルは `/etc/kubernetes/admin.conf` にあります。
 コピーできない場合、権限を`chmod +r admin.conf`で付与してください。
 
-確認方法: 管理 PC で `kubectl get nodes` を実行するとノードが見える。
+確認方法: 管理 PC で `kubectl get nodes` を実行するとノードが見えます。
 
-　下記の初期化手順をおまじないとして実行してください。
+　次に、Kubernetes のネットワークを構築するために以下のおまじないを実行してください。
 ```
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
 
 ### ワーカーにラベルを設定
-管理 PC からワーカーにラベルを設定します。
+　管理 PC からワーカーにラベルを設定します。
 このラベルは、ソフトウェア（Docker イメージ）を動かすワーカーノードを指定するのに使用されます。
 ```
 kubectl label node worker-2 consolein=true
@@ -327,35 +338,36 @@ kubectl label node worker-1 consoleout=true
 kubectl label node worker-1 rtshell=true
 kubectl label node worker-1 nameserver=true
 ```
-確認方法: `kubectl get nodes --show-labels` で設定した値が見える。
+確認方法: `kubectl get nodes --show-labels` で設定したラベルが見えます。
 
 ラベルの削除法は、 ` kubectl label nodes worker-1 consoleout-` です。
 
 ## RTC の実行
 　ここではツールを用いて RTC の起動やバージョン変更の仕方を説明します。
 この章の作業を通して Docker / Kubenetes の使用方法、RTC の起動スクリプト (=Kubernetes マニフェストファイル) や
-実行イメージ (=ビルド済 RTC, Docker イメージ)のリポジトリへの登録方法を知ることができます。
+実行イメージ (=ビルド済 RTC, Docker イメージ) のリポジトリへの登録方法を知ることができます。
 
 1. ネームサーバーと rtshell を起動します。
-   ネームサーバー用のイメージとマニフェストファイルを用意しました。以下を実行して下さい。
+
+   　ネームサーバー用のイメージとマニフェストファイルを用意しました。以下を実行して下さい。
+
    ```
    kubectl apply -f https://raw.githubusercontent.com/r-kurose/rtm-namaserver-image/master/nameserver.yaml
    kubectl apply -f https://raw.githubusercontent.com/r-kurose/rtshell-image/master/rtshell.yaml
    ```
 
    確認方法: `kubectl get pods` で二つの Pod が Running になれば成功です。
-   
+
 1. ワーカーに RTC を起動します。
-   ConsoleIn/ConsoleOut のイメージとマニフェストファイルを用意しました。以下を実行して下さい。
+
+   　ConsoleIn/ConsoleOut のイメージとマニフェストファイルを用意しました。以下を実行して下さい。
    ```
    kubectl apply -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/master/ConsoleIn/ConsoleIn.yaml
    kubectl apply -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/master/ConsoleOut/ConsoleOut.yaml
    ```
 
    確認方法: `kubectl get pods` で確認の上、`kubectl exec <rtshell の Pod 名> -- rtls -R 10.96.0.100` で RTC が見えれば成功です。
-   
-   以下はコマンド実施例なので、Pod名は読み替えてください。
-   
+   　以下のような結果が表示されます。
    ```
    $ kubectl get pods
    NAME                              READY   STATUS    RESTARTS   AGE
@@ -376,15 +388,15 @@ kubectl label node worker-1 nameserver=true
    ./pod-consoleout-75948f6848-mhlzv.host_cxt:
    ConsoleOut0.rtc
    ```
-   
+
 1. ConsoleIn RTC へ値を入力する
 
-   kubectl attach を使い、ConsoleIn と ConsoleOut の Pod にアタッチして RTC の動作を確認できます。
-   以下のコマンドはそれぞれ別のシェルで実施してください。 
-   ConsoleIn 側のシェルに attach したシェル側で値を入力すると、ConsoleOut 側のシェルに値が出力されます。
-   
+   　ConsoleIn と ConsoleOut の Pod にアタッチして RTC の動作を確認します。
+   以下のコマンドはそれぞれ別のシェルで実行してください。
+   ConsoleIn 側のシェルに値を入力すると、ConsoleOut 側のシェルに値が出力されます。
+
    ```
-   kubectl attatch <ConsoleOut Pod名>
+   kubectl attach <ConsoleOut Pod名>
    ```
    ```
    kubectl attach -ti <ConsoleIn Pod名>
@@ -392,19 +404,17 @@ kubectl label node worker-1 nameserver=true
 
 ## RTC の更新
 
-以下のような変更を加えた ConsoleIn に切り替えます。
+　以下のような変更を加えた ConsoleIn に切り替えます。
 
    https://github.com/r-kurose/kube-simpleio-sample/commit/c65b39f2bd3e83e103dce6a8ff5a01295bd02510
-   
+
 1. ConsoleIn を終了します。
 
    ```
    kubectl delete -f https://raw.githubusercontent.com/r-kurose/kube-simpleio-sample/master/ConsoleIn/ConsoleIn.yaml
    ```
-   `kubectl get pods`で ConsoleIn が終了したことを確認してください。      
-   
-   
-   
+   `kubectl get pods`で ConsoleIn が終了したことを確認してください。
+
 1. アップデート版 ConsoleIn v1.1 を起動します。
 
    ```
@@ -412,18 +422,19 @@ kubectl label node worker-1 nameserver=true
    ```
    `kubectl attach -ti <ConsoleIn Pod名>`を使って値を入力すると、 +1 した値が出力されます。
 
-
 ## RTC のイメージとマニフェストファイルの作成
 1. ConsoleIn のソースコードを取得する。
-   以下から、ソースコードをダウンロードして下さい。
+
+   　以下から、ソースコードをダウンロードして下さい。
+
    https://github.com/r-kurose/kube-simpleio-sample
 
-   なお、自分でコンポーネントを作りたい場合は、作成ツールの一覧にある RTC Builder でテンプレートを作成して下さい。
+   　なお、自分でコンポーネントを作りたい場合は、作成ツールの一覧にある RTC Builder でテンプレートを作成して下さい。
 
 1. RTC のソースコードを変更してビルドします。
-   ここで、RTC のソースコードに変更を加えてください。例えば、入力を促すメッセージを変更するなど。
 
-   次に RTC をビルドします。
+   　ここで、RTC のソースコードに変更を加えてください。 (例: 入力を促すメッセージを変更)  
+   　次に RTC をビルドします。
    テンプレートの Dockerfile は、Ubuntu 用と Alpine 用があります。
    どちらを採用するかは、イメージサイズに関してまとめた付録の章も参考にして下さい。
    amd64 向けと arm (Raspberry Pi) 向けを作りたい場合の方法も付録に記載しています。
@@ -444,18 +455,18 @@ kubectl label node worker-1 nameserver=true
    ```
 1. Kubernetes のマニフェストファイル (.yaml) を開きイメージ名を変更します。
 
-   ConsoleIn.yamlの L.17 行目を `image: <リポジトリ名>/consolein:2.0` に変更します。
+   　ConsoleIn.yamlの L.17 行目を `image: <リポジトリ名>/consolein:2.0` に変更します。
    開発時は、ここで作成したマニフェストファイルを git などのソースコードリポジトリで管理することをお勧めします。
 
 1. バージョンアップした RTC を起動します。
    ```
    kubectl delete -f ConsoleIn.yaml
    ```
-   `kubectl get pods`で ConsoleIn が終了したことを確認してください。 
+   　ここで `kubectl get pods`で ConsoleIn が終了したことを確認した上で、RTC を起動します。
    ```
    kubectl apply -f ConsoleIn.yaml
    ```
-   RTC の動作を確認してください。
+   　最後に RTC の動作を確認してください。
 
 # 付録
 ## Docker ビルドの高速化
@@ -530,7 +541,7 @@ Docker イメージのサイズが大きいと実行時の取得に時間がか�
 ## コンテナネットワーク
 
 　Kubenetes は、Pod のネットワークを物理ネットワークから抽象化するために **クラスターネットワーク** (CNI)を用います。
-例えば下記の図のように、Pod には青文字の IP が仮想的に割り当てられます。
+例えば下記の図のように、Pod には青文字の IP が仮想的に割り当てられます。  
 　Kubernetes の注意点として Pod が起動するまでは基本的に IP がわからないことがあります。図の例では、
 RTC はネームサーバーに自身を登録したいのですが、ネームサーバーの IP (10.96.0.4) を知ることはできません。
 このような場合に、**ClusterIP** または **NodePort** あるいは総称して **サービス** という機能を用います。
