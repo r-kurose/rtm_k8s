@@ -175,7 +175,7 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
   + ソースコード
 
     https://github.com/r-kurose/OpenRTP-aist/tree/docker_template
-  
+
   + 実行ファイル
 
     https://github.com/r-kurose/OpenRTP-aist/releases/tag/si2019   
@@ -183,7 +183,7 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 - ネームサーバー
   + Docker イメージ (linux/amd64, arm)
 
-    https://hub.docker.com/repository/docker/kuroseaist/rtm-nameserver
+    https://hub.docker.com/r/kuroseaist/rtm-nameserver
 
   + Dockerfile と Kubenetes マニフェストファイル
 
@@ -193,7 +193,7 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 
   + Docker イメージ (linux/amd64, 386, arm, arm64).
 
-    https://hub.docker.com/repository/docker/kuroseaist/rtshell
+    https://hub.docker.com/r/kuroseaist/rtshell
 
   + Dockerfile と Kubenetes マニフェストファイル
 
@@ -201,12 +201,12 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 
 - サンプルコンポーネント
   + Docker イメージ (linux/amd64, arm)
-  
-    ConsoleIn: https://hub.docker.com/repository/docker/kuroseaist/consolein  
-    ConsoleOut: https://hub.docker.com/repository/docker/kuroseaist/consolein
-  
+
+    ConsoleIn: https://hub.docker.com/r/kuroseaist/consolein  
+    ConsoleOut: https://hub.docker.com/r/kuroseaist/consolein
+
   + ソースコード
-  
+
     https://github.com/r-kurose/kube-simpleio-sample
 
 - ビルド用 Docker イメージ (ビルドキャッシュ用）
@@ -217,19 +217,19 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 
   + omniORB 4.2.3 ビルドイメージ on Alpine 3.10 (linux/amd64, arm).
 
-    https://hub.docker.com/repository/docker/kuroseaist/omniorb-alpine
+    https://hub.docker.com/r/kuroseaist/omniorb-alpine
 
     https://github.com/r-kurose/omniorb-alpine-image
 
   + OpenRTM-aist on Alpine ビルドイメージ (linux/amd64, arm).
 
-    https://hub.docker.com/repository/docker/kuroseaist/openrtm-alpine
+    https://hub.docker.com/r/kuroseaist/openrtm-alpine
 
     https://github.com/r-kurose/openrtm-alpine-image
 
   + OpenRTM-aist on Ubuntu ビルドイメージ (linux/amd64, 386, arm, arm64).
 
-    https://hub.docker.com/repository/docker/kuroseaist/openrtm-ubuntu
+    https://hub.docker.com/r/kuroseaist/openrtm-ubuntu
 
     https://github.com/r-kurose/openrtm-ubuntu-image
 
@@ -568,6 +568,7 @@ RTC はネームサーバーに自身を登録したいのですが、ネーム�
 # 改訂履歴
   - 2019-11-28: 初版
   - 2019-11-29: V字モデルの図を追加
+  - 2019-11-29: DockerHub の URL をログインなしで見られるものに変更
 
 # 注記
 　本記事は第20回計測自動制御学会システムインテグレーション部門講演会 (SI2019) のミドルウェアコンテスト作品です。
