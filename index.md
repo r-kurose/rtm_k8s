@@ -572,7 +572,7 @@ RTC はネームサーバーに自身を登録したいのですが、ネーム�
 
 # 注記
 　本記事は第20回計測自動制御学会システムインテグレーション部門講演会 (SI2019) のミドルウェアコンテスト作品です。
-* コンテスト作品掲載ページ: https://tmp.openrtm.org/openrtm/ja/project/k8s-rtc
+* コンテスト作品掲載ページ: https://openrtm.org/openrtm/ja/project/k8s-rtc
 * SI2019 公式ページ: https://sice-si.org/conf/si2019/
 
 ---
