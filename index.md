@@ -263,7 +263,7 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 ワークフローを実行する手順を示します。これを通して一通りの作業を体験できます。ここで構築するシステムを以下の図に示します。
 
 <div align="center">
-<img src="https://user-images.githubusercontent.com/45954537/69773320-deaff080-11d5-11ea-8fd9-af9dbe4970ee.png" width="500px">
+<img src="https://user-images.githubusercontent.com/45954537/70214927-b0a35100-177f-11ea-98ab-6ef967765d00.png" width="500px">
 </div>
 
 上記を実践する場合、5台の PC (Raspberry Pi を含んでも良い) が必要です。
@@ -271,7 +271,7 @@ Kubernetes は適切なワーカーノードを選択し、その中で Pod を�
 　なお、マスターノードにワーカーノードを兼務させることもできますが、本稿では説明しません。
 
 <div align="center">
-<img src="https://user-images.githubusercontent.com/45954537/69773322-df488700-11d5-11ea-9348-2743b0ac9181.png" width="400px">
+<img src="https://user-images.githubusercontent.com/45954537/70214926-b0a35100-177f-11ea-9101-ef410be17b91.png" width="400px">
 </div>
 
 ## インストール手順
@@ -562,13 +562,14 @@ RTC はネームサーバーに自身を登録したいのですが、ネーム�
 アクセスは設定が必要となります。最も簡単な解決方法は、Pod を動かすかにかかわらず、すべてのマシンをクラスターに登録することです。
 
 <div align="center">
-<img src="https://user-images.githubusercontent.com/45954537/69773299-cdff7a80-11d5-11ea-9bdc-b3b0932b40c4.png" width="500px">
+<img src="https://user-images.githubusercontent.com/45954537/70214860-818cdf80-177f-11ea-9cf7-93ebe0869079.png" width="500px">
 </div>
 
 # 改訂履歴
   - 2019-11-28: 初版
   - 2019-11-29: V字モデルの図を追加
   - 2019-11-29: DockerHub の URL をログインなしで見られるものに変更
+  - 2019-12-05: 図の差し替え ConsoleIn と ConsoleOut のデータフローを修正
 
 # 注記
 　本記事は第20回計測自動制御学会システムインテグレーション部門講演会 (SI2019) のミドルウェアコンテスト作品です。
