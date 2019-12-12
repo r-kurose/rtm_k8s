@@ -535,7 +535,7 @@ Docker buildx (https://docs.docker.com/buildx/working-with-buildx/) プラグイ
 
 ## Docker イメージのサイズ
 
-Docker イメージのサイズが大きいと実行時の取得に時間がかかります。
+　Docker イメージのサイズが大きいと実行時の取得に時間がかかります。
 特に配置する回数の多い RTC の Dockerイメージは小さくあるべきです。
 以下に、参考値として Raspberry Pi 用 Docker イメージの容量と取得時間 (docker pull) を計測した結果を示します。
 使用したコンポーネントは、 SineWaveComp です。
@@ -562,7 +562,7 @@ RTC はネームサーバーに自身を登録したいのですが、ネーム�
 アクセスは設定が必要となります。最も簡単な解決方法は、Pod を動かすかにかかわらず、すべてのマシンをクラスターに登録することです。
 
 <div align="center">
-<img src="https://user-images.githubusercontent.com/45954537/70214860-818cdf80-177f-11ea-9cf7-93ebe0869079.png" width="500px">
+<img src="https://user-images.githubusercontent.com/45954537/70702314-35a6e100-1d11-11ea-9650-6a698289c8f1.png" width="500px">
 </div>
 
 # 改訂履歴
@@ -570,6 +570,7 @@ RTC はネームサーバーに自身を登録したいのですが、ネーム�
   - 2019-11-29: V字モデルの図を追加
   - 2019-11-29: DockerHub の URL をログインなしで見られるものに変更
   - 2019-12-05: 図の差し替え ConsoleIn と ConsoleOut のデータフローを修正
+  - 2019-12-12: 図の差し替え 付録「コンテナネットワーク」で転送先を文書と整合するように修正
 
 # 注記
 　本記事は第20回計測自動制御学会システムインテグレーション部門講演会 (SI2019) のミドルウェアコンテスト作品です。
